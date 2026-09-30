@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KlirSecure Audit</title>
+<meta name="description" content="Auditez vos sites et projets (avec autorisation).">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#070b14">
+<meta name="application-name" content="KlirSecure">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+</head>
+<body>
+<style>
+:root{--bg:#070b14;--bg2:#0b1220;--card:#0f172a;--card2:#131f38;--line:#1e2d4d;--txt:#e6edf7;--mut:#8fa0bd;--acc:#22d3ee;--acc2:#818cf8;--ok:#34d399;--crit:#f43f5e;--high:#fb923c;--med:#facc15;--low:#38bdf8;--info:#94a3b8}
+*{box-sizing:border-box}html{color-scheme:dark}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16265c 0%,transparent 60%),radial-gradient(900px 500px at 0% 0%,#0e3a4a 0%,transparent 55%),var(--bg);color:var(--txt);font:14px/1.5 Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;text-align:left;min-height:100vh}
+a{color:var(--acc)}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 18px;background:rgba(7,11,20,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+.logo .shield{width:30px;height:30px;display:grid;place-items:center;background:linear-gradient(135deg,var(--acc),var(--acc2));border-radius:9px;color:#04121a;font-weight:900}
+.logo small{display:block;font-weight:500;color:var(--mut);letter-spacing:2px;font-size:10px}
+.nav{display:flex;gap:6px;margin-left:12px;flex-wrap:wrap}
+.nav button{background:transparent;border:1px solid transparent;color:var(--mut);padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:600}
+.nav button.on{background:#17233f;color:#fff;border-color:var(--line)}
+.btn{background:linear-gradient(135deg,var(--acc),var(--acc2));border:0;color:#04121a;font-weight:800;padding:9px 14px;border-radius:10px;cursor:pointer}
+.btn.ghost{background:#141f3a;color:var(--txt);border:1px solid var(--line);font-weight:600}
+.btn.warn{background:#3a1420;color:#fecdd3;border:1px solid #7f1d2f}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 80px}
+.grid{display:grid;gap:12px}
+.g6{grid-template-columns:repeat(6,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:900px){.g6{grid-template-columns:repeat(3,1fr)}.g3,.g2{grid-template-columns:1fr}.nav{margin-left:0}}
+@media(max-width:700px){.topbar{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px}.logo{justify-content:flex-start}.nav{margin:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.nav button{padding:8px 6px;font-size:12px;text-align:center}.topbar .row{margin-left:0!important;display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.topbar .row select,.topbar .row button,.topbar .row span{width:100%;max-width:none!important}.topbar #authPill{text-align:center}.topbar #newAuditTopBtn{grid-column:1/-1}.wrap{padding:14px 10px 80px}.g6{grid-template-columns:repeat(2,1fr)}.card{padding:12px}.big{font-size:28px}table{display:block;overflow-x:auto;white-space:nowrap}.checks{grid-template-columns:1fr 1fr}.find .head{gap:6px}}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h3{margin:0 0 8px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+.big{font-size:34px;font-weight:900}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.4px}
+.crit{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.4)}
+.high{background:rgba(251,146,60,.14);color:#fed7aa;border:1px solid rgba(251,146,60,.4)}
+.med{background:rgba(250,204,21,.13);color:#fde68a;border:1px solid rgba(250,204,21,.35)}
+.low{background:rgba(56,189,248,.13);color:#bae6fd;border:1px solid rgba(56,189,248,.35)}
+.info{background:rgba(148,163,184,.13);color:#cbd5e1;border:1px solid rgba(148,163,184,.3)}
+.okk{background:rgba(52,211,153,.13);color:#a7f3d0;border:1px solid rgba(52,211,153,.35)}
+.mut{color:var(--mut)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+input[type=text],textarea,select{background:#0a1326;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;width:100%;font:inherit}
+textarea{min-height:130px;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+label.chk{display:flex;gap:8px;align-items:center;background:#0c1630;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
+.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:900px){.checks{grid-template-columns:1fr 1fr}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:1px}
+code,pre{background:#070d1d;border:1px solid var(--line);border-radius:8px;padding:2px 6px;font-family:ui-monospace,Consolas,monospace;font-size:12px}
+pre{padding:10px;overflow:auto;white-space:pre-wrap}
+.find{border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;background:#0b1428}
+.find .head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{height:8px;background:#0a1326;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%}
+.progress{height:10px;background:#0a1326;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
+.log{background:#050a16;border:1px solid var(--line);border-radius:10px;padding:10px;height:170px;overflow:auto;font-family:ui-monospace,monospace;font-size:12px;color:#a9bcd8}
+.auth{border:1px dashed #7f1d2f;background:#1a0b12;border-radius:10px;padding:10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.tabs button{background:#101b36;border:1px solid var(--line);color:var(--mut);border-radius:99px;padding:6px 12px;cursor:pointer;font-weight:700}
+.tabs button.on{background:#1a2c55;color:#fff}
+.kv{display:flex;gap:14px;align-items:center}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.steps span{background:#0c1630;border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:11px;font-weight:800;color:var(--mut)}
+.steps span.done{background:rgba(52,211,153,.12);color:#a7f3d0;border-color:rgba(52,211,153,.4)}
+.stOPEN{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.4);padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800}
+.stRESOLVED{background:rgba(52,211,153,.13);color:#a7f3d0;border:1px solid rgba(52,211,153,.35);padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800}
+.stNEW{background:rgba(251,146,60,.14);color:#fed7aa;border:1px solid rgba(251,146,60,.4);padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800}
+.stSTILL{background:rgba(250,204,21,.13);color:#fde68a;border:1px solid rgba(250,204,21,.35);padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800}
+.scoreRing{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:22px;background:conic-gradient(var(--acc) 0 var(--p,72%),#16233f var(--p,72%) 100%);position:relative;flex:none}
+.scoreRing b{background:#0a1326;width:70px;height:70px;border-radius:50%;display:grid;place-items:center}
+.notice{border:1px solid #334155;background:#0c1526;border-radius:12px;padding:12px}
+footer{color:var(--mut);text-align:center;padding:30px 10px;font-size:12px}
+@media print{.topbar,.noPrint,#view-dash,#view-new,#view-map,#view-compare,#view-history,footer{display:none!important}body{background:#fff;color:#111}body *{color:#111!important;border-color:#ccc!important;background:#fff!important}#view-results{display:block!important}#view-results .card,#view-results .find{border:1px solid #999!important;margin:6px 0;break-inside:avoid}pre,code{background:#f3f4f6!important;color:#111!important;border:1px solid #ccc!important}#printReport{display:block!important;color:#111}.prHead{border-bottom:3px solid #111;padding-bottom:8px;margin-bottom:12px}.prHead h1{margin:0;font-size:22px}.prSec{margin:14px 0;break-inside:avoid}.prSec h2{font-size:15px;border-bottom:1px solid #999;padding-bottom:4px;margin:0 0 6px}.prFind{border:1px solid #999;border-radius:6px;padding:8px;margin:8px 0;break-inside:avoid}.prFind h3{margin:0 0 4px;font-size:13px}.prGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.prMut{color:#444!important;font-size:11px;text-transform:uppercase;letter-spacing:.5px}#printReport{display:none}}
+</style>
+<div class="topbar">
+<div class="logo"><div class="shield">K</div><div>KLIRSECURE<small>AUDIT · MVP</small></div></div>
+<div class="nav noPrint">
+<button data-view="dash" class="on" id="navDash">Dashboard</button>
+<button data-view="new" id="navNew">Nouvel audit</button>
+<button data-view="results" id="navRes">Résultats</button>
+<button data-view="map" id="navMap">Remediation Map</button>
+<button data-view="compare" id="navCmp">Vérifier</button>
+<button data-view="history" id="navHist">Historique</button>
+<button data-view="org" id="navOrg">Organisation</button>
+</div>
+<div style="margin-left:auto" class="row noPrint"><select id="orgSel" style="max-width:200px" title="Organisation active"></select><select id="userSel" style="max-width:160px" title="Utilisateur actif"></select><span class="pill okk" id="authPill">Usage autorisé uniquement</span><button class="btn" id="newAuditTopBtn">+ New Audit</button></div>
+</div>
+<div class="wrap">
+<div id="view-dash"></div>
+<div id="view-new" hidden>
+<div class="grid g2">
+<div class="card"><h3>Audit URL — site web</h3>
+<div class="row"><input type="text" id="targetInput" placeholder="https://example.com" value="https://example.com"></div>
+<div class="checks" id="webChecks" style="margin-top:10px"></div>
+<div class="auth" style="margin-top:10px"><label class="row" style="gap:8px"><input type="checkbox" id="authWebChk"> <span>Je confirme auditer uniquement un site pour lequel <b>j'ai une autorisation</b>. Tests passifs, non intrusifs (pas d'attaque, pas de brute-force).</span></label></div>
+<div class="row" style="margin-top:10px"><button class="btn" id="startWebBtn">START AUDIT</button><button class="btn ghost" id="demoWebBtn">Démo</button></div>
+</div>
+<div class="card"><h3>Audit projet — code / GitHub</h3>
+<div class="row"><input type="text" id="repoInput" placeholder="https://github.com/owner/repo ou collez package.json / code ci-dessous"></div>
+<div class="row" style="margin-top:8px"><input type="text" id="branchInput" placeholder="Branch: main" value="main" style="max-width:180px"><button class="btn ghost" id="loadRepoBtn">Charger GitHub</button></div>
+<textarea id="codeInput" placeholder="Collez ici : package.json, .env.example, src/services/payment.js…"></textarea>
+<div class="checks" id="codeChecks" style="margin-top:8px"></div>
+<div class="auth" style="margin-top:10px"><label class="row" style="gap:8px"><input type="checkbox" id="authCodeChk"> <span>Je confirme auditer uniquement un projet pour lequel <b>j'ai les droits</b>. Les secrets seront masqués dans le rapport.</span></label></div>
+<div class="row" style="margin-top:10px"><button class="btn" id="startCodeBtn">ANALYZE PROJECT</button><button class="btn ghost" id="demoCodeBtn">Exemple vulnérable</button></div>
+</div>
+</div>
+<div class="card" style="margin-top:12px"><h3>Confidentialité & autorisation</h3><div class="row"><input type="text" id="authByInput" placeholder="Autorisé par (nom / rôle, optionnel)" style="max-width:320px"><label class="chk"><input type="checkbox" id="localOnlyChk"> Mode local-only (aucune donnée vers l'IA externe)</label></div><div class="mut" style="font-size:12px;margin-top:8px">Par défaut, « Expliquer avec IA » et le résumé exécutif envoient cible + preuves à un service IA externe. En mode local-only, tout reste sur l'appareil (analyses génériques). Chaque audit est inscrit au journal des autorisations (Historique).</div></div>
+<div class="card" style="margin-top:12px"><h3>Progression du scan</h3><div class="progress"><i id="scanBar" style="width:0%"></i></div><div class="row" style="margin-top:8px"><span class="mut" id="scanStatus">En attente.</span><span class="pill info" id="scanPhase">idle</span></div><div class="log" id="scanLog" style="margin-top:8px"></div></div>
+</div>
+<div id="view-results" hidden></div>
+<div id="view-map" hidden></div>
+<div id="view-compare" hidden></div>
+<div id="view-history" hidden></div>
+<div id="view-org" hidden></div>
+</div>
+<footer class="noPrint">KlirSecure Audit · tests passifs autorisés uniquement · ne pas utiliser contre des systèmes tiers sans autorisation · <a href="#" id="exportJsonLink">Export JSON</a> · <a href="#" id="printLink">Rapport PDF (impression)</a></footer>
+<script>
+window.root = window.root || {};
+window.root.kv = null;
+window.root.superFetch = async function(url, opt){
+  opt = opt||{};
+  try { const r = await fetch(url, opt); return r; } catch(e) {
+    const prox = "/.netlify/functions/proxy?url=" + encodeURIComponent(url);
+    return await fetch(prox, {method: opt.method||"GET", headers: opt.headers||{}, body: opt.body});
+  }
+};
+window.root.generateText = async function(){ return "(IA desactivee en version statique)"; };
+
+</script>
+<script src="./app.js"></script>
+<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").catch(()=>{});}</script>
+
+</body>
+</html>
